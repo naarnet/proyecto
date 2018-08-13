@@ -1,0 +1,211 @@
+sonata_translation:
+    locales: [en, es]
+    default_locale: es
+    # here enable the types you need
+    gedmo:
+        enabled: true
+    knplabs:
+        enabled: true
+    #phpcr:
+    #    enabled: true
+     
+
+sonata_block:
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts: [admin]
+        sonata.block.service.text:
+sonata_core:
+    form:
+        mapping:
+            enabled: false
+            
+sonata_admin:
+    security:
+        handler: sonata.admin.security.handler.role    
+    title: 'Sonata Admin'
+    dashboard:
+        groups:
+            sonata_admin.group.admin: 
+                label: Administración
+                items: 
+                    - admin.user
+                    - admin.role
+                    - admin.conexion
+#                    - admin.authorization 
+#                    - admin.store_entity_type
+                    - admin.store_entity_role
+#                    - admin.marketplace_category
+                    - admin.mapping_category
+                roles: [ROLE_ADMIN]
+            sonata_admin.group.store: 
+                label: Gestor de Tienda
+                items: 
+                    - admin.store 
+                    - admin.store_migration
+#                    - admin.store_credential
+                    - admin.store_category
+                    - admin.marketplace
+                    - admin.marketplace_category
+                    - admin.mapping_category
+                roles: [ROLE_ADMIN ,ROLE_STORE]
+        blocks:
+            -   
+                position: center
+                type: sonata.block.service.text
+                settings:
+                    content: >
+                        <h2><code style="#428bca">Integración Marketplace </code></h2>
+            -   
+                position: left
+                type: sonata.admin.block.admin_list
+                settings: 
+                    groups: [sonata_admin.group.admin]
+                    
+            -   
+                position: left
+                type: sonata.admin.block.admin_list
+                settings: 
+                    groups: [sonata_admin.group.store]
+                
+#            - { type: sonata.admin.block.admin_list, position: left }
+#        
+                    
+    templates:
+        user_block: "admin/user_block.html.twig"
+    assets:
+        extra_stylesheets:
+            - bundles/sonatatranslation/css/sonata-translation.css    
+        javascripts:
+
+            # The default javascript list:
+            - 'bundles/sonatacore/vendor/jquery/dist/jquery.min.js'
+            - 'bundles/sonataadmin/vendor/jquery.scrollTo/jquery.scrollTo.min.js'
+            - 'bundles/sonataadmin/vendor/jqueryui/ui/minified/jquery-ui.min.js'
+            - 'bundles/sonataadmin/vendor/jqueryui/ui/minified/i18n/jquery-ui-i18n.min.js'
+            - 'bundles/sonatacore/vendor/moment/min/moment.min.js'
+            - 'bundles/sonatacore/vendor/bootstrap/dist/js/bootstrap.min.js'
+            - 'bundles/sonatacore/vendor/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js'
+            - 'bundles/sonataadmin/vendor/jquery-form/jquery.form.js'
+            - 'bundles/sonataadmin/jquery/jquery.confirmExit.js'
+            - 'bundles/sonataadmin/vendor/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js'
+            - 'bundles/sonatacore/vendor/select2/select2.min.js'
+            - 'bundles/sonataadmin/vendor/admin-lte/dist/js/app.min.js'
+            - 'bundles/sonataadmin/vendor/iCheck/icheck.min.js'
+            - 'bundles/sonataadmin/vendor/slimScroll/jquery.slimscroll.min.js'
+            - 'bundles/sonataadmin/vendor/waypoints/lib/jquery.waypoints.min.js'
+            - 'bundles/sonataadmin/vendor/waypoints/lib/shortcuts/sticky.min.js'
+            - 'bundles/sonataadmin/vendor/readmore-js/readmore.min.js'
+            - 'bundles/sonataadmin/vendor/masonry/dist/masonry.pkgd.min.js'
+            - 'bundles/sonataadmin/Admin.js'
+            - 'bundles/sonataadmin/treeview.js'
+            - 'bundles/sonataadmin/sidebar.js'    
+                    
+services:
+#   Sonata Admin User
+    admin.user:
+        class: App\Admin\UserAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Administrador, label: User }
+        arguments: [~, App\Entity\User, App\Controller\AdminSonata\UserAdminController]
+        calls:
+#            - [setTranslationDomain, [MyProjectBundle]]
+#            - [setUserManager, ['@fos_user.user_manager']]
+#            - [setSecurityContext, ['@security.context']]
+        public: true
+        
+#   Sonata Admin Role        
+    admin.role:
+        class: App\Admin\RoleAdmin
+        arguments: [~, App\Entity\Role, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Administrador ,label: Rol }
+        public: true
+        
+#   Sonata Admin Store        
+    admin.store:
+        class: App\Admin\StoreAdmin
+        arguments: [~, App\Entity\Store, App\Controller\AdminSonata\StoreAdminController]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Gestor de Tienda ,label: Store }
+        public: true
+        
+#   Sonata Admin Conexion        
+    admin.conexion:
+        class: App\Admin\ConexionAdmin
+        arguments: [~, App\Entity\Conexion, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Sandbox Mode }
+        public: true     
+        
+#   Sonata Admin Store Entity Type        
+    admin.store_entity_type:
+        class: App\Admin\StoreEntityTypeAdmin
+        arguments: [~, App\Entity\StoreEntityType, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Store Type}
+        public: true   
+        
+#   Sonata Admin Store Entity Role          
+    admin.store_entity_role:
+        class: App\Admin\StoreEntityRoleAdmin
+        arguments: [~, App\Entity\StoreEntityRole, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Store Role}
+        public: true       
+        
+#   Sonata Admin Store Migration   
+    admin.store_migration:
+        class: App\Admin\StoreMigrationAdmin
+        arguments: [~, App\Entity\StoreMigration, App\Controller\AdminSonata\StoreMigrationAdminController]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Migration}
+        public: true       
+        
+        #   Sonata Admin Authorization        
+#    admin.store_credential:
+#        class: App\Admin\StoreCredentialAdmin
+#        arguments: [~, App\Entity\StoreCredential, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Store Credential }
+#        public: true
+        
+#   Sonata Admin Authorization        
+#    admin.authorization:
+#        class: App\Admin\AuthorizationAdmin
+#        arguments: [~, App\Entity\Authorization, ~]
+#        tags:
+#            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Conextion Header Authorization }
+#        public: true
+        
+    admin.marketplace:
+        class: App\Admin\MarketplaceAdmin
+        arguments: [~, App\Entity\Marketplace, App\Controller\AdminSonata\MarketplaceAdminController]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Marketplace }
+        public: true
+    admin.marketplace_category:
+        class: App\Admin\MarketplaceCategoryAdmin
+        arguments: [~, App\Entity\MarketplaceCategory, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Marketplace Categories }
+        public: true
+        
+#   Sonata Admin Authorization        
+    admin.store_category:
+        class: App\Admin\StoreCategoryAdmin
+        arguments: [~, App\Entity\StoreCategory, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Categorías de Tienda }
+        public: true
+        
+    admin.mapping_category:
+        class: App\Admin\MappingCategoryAdmin
+        arguments: [~, App\Entity\MappingCategory, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Mapeo de Categorías }
+        public: true    
+        
+
+        
+

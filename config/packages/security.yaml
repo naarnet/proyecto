@@ -1,0 +1,258 @@
+security:
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    encoders:
+        App\Entity\User: {algorithm: bcrypt}
+    
+    providers:
+        our_db_provider:
+            entity:
+                class : App\Entity\User
+                property: email      
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        devq:
+            anonymous: ~
+            provider: our_db_provider
+            form_login:
+                login_path: login
+                check_path: login
+                default_target_path: sonata_admin_dashboard
+                csrf_token_generator: security.csrf.token_manager    
+#                always_use_default_target_path: true
+            logout:
+                path: /logout
+                target: /login
+                
+
+            # activate different ways to authenticate
+
+            # http_basic: true
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: true
+            # https://symfony.com/doc/current/security/form_login_setup.html
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+         - { path: ^/admin, roles: [ROLE_ADMIN,ROLE_STORE] }
+         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+    role_hierarchy:
+        
+        ROLE_ADMIN:
+            - ROLE_SONATA_ADMIN
+            - ROLE_ADMIN_USER_ALL
+            - ROLE_ADMIN_ROLE_ALL
+            - ROLE_ADMIN_STORE_ALL
+            - ROLE_ADMIN_STORE_CREDENTIAL_ALL
+            - ROLE_ADMIN_CONEXION_ALL
+            - ROLE_ADMIN_AUTHORIZATION_ALL
+            - ROLE_ADMIN_STORE_CATEGORY_READER
+            - ROLE_ADMIN_MARKETPLACE_ALL
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_READER
+            - ROLE_ADMIN_STORE_CATEGORY_ALL
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_ALL
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_ALL
+            - ROLE_ADMIN_STORE_MIGRATION_ALL
+            - ROLE_ADMIN_MAPPING_CATEGORY_ALL
+            
+        ROLE_STORE:
+            - ROLE_SONATA_ADMIN
+            - ROLE_ADMIN_STORE_ALL
+            - ROLE_ADMIN_STORE_CREDENTIAL_ALL
+            - ROLE_ADMIN_CONEXION_READER
+            - ROLE_ADMIN_AUTHORIZATION_READER
+            - ROLE_ADMIN_USER_READER
+            - ROLE_ADMIN_STORE_CATEGORY_ALL
+            - ROLE_ADMIN_STORE_MIGRATION_ALL
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_LIST
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_LIST
+            - ROLE_ADMIN_MARKETPLACE_READER
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_READER
+            - ROLE_ADMIN_MAPPING_CATEGORY_ALL
+            
+#       USER    
+        ROLE_ADMIN_USER_READER:
+            - ROLE_ADMIN_USER_LIST
+            - ROLE_ADMIN_USER_VIEW
+        ROLE_ADMIN_USER_EDITOR:
+            - ROLE_ADMIN_USER_EDIT    
+        ROLE_ADMIN_USER_CREATE:
+            - ROLE_ADMIN_USER_CREATE     
+        ROLE_ADMIN_USER_ALL:
+            - ROLE_ADMIN_USER_LIST
+            - ROLE_ADMIN_USER_VIEW
+            - ROLE_ADMIN_USER_EDITOR
+            - ROLE_ADMIN_USER_CREATE
+        
+#       ROLE ENTITY
+        ROLE_ADMIN_ROLE_READER:
+            - ROLE_ADMIN_ROLE_LIST
+            - ROLE_ADMIN_ROLE_VIEW
+        ROLE_ADMIN_ROLE_EDITOR:
+            - ROLE_ADMIN_ROLE_EDIT    
+        ROLE_ADMIN_ROLE_CREATE:
+            - ROLE_ADMIN_ROLE_CREATE     
+        ROLE_ADMIN_ROLE_ALL:
+            - ROLE_ADMIN_ROLE_LIST
+            - ROLE_ADMIN_ROLE_VIEW
+            - ROLE_ADMIN_ROLE_EDITOR
+            - ROLE_ADMIN_ROLE_CREATE    
+#            
+##        ENTITY STORE
+        ROLE_ADMIN_STORE_READER:
+            - ROLE_ADMIN_STORE_LIST
+            - ROLE_ADMIN_STORE_VIEW
+        ROLE_ADMIN_STORE_EDITOR:
+            - ROLE_ADMIN_STORE_EDIT    
+        ROLE_ADMIN_STORE_CREATE:
+            - ROLE_ADMIN_STORE_CREATE     
+        ROLE_ADMIN_STORE_ALL:
+            - ROLE_ADMIN_STORE_LIST
+            - ROLE_ADMIN_STORE_VIEW
+            - ROLE_ADMIN_STORE_EDITOR
+            - ROLE_ADMIN_STORE_CREATE    
+            
+#        ENTITY STORE CREDENTIAL
+        ROLE_ADMIN_STORE_CREDENTIAL_READER:
+            - ROLE_ADMIN_STORE_CREDENTIAL_LIST
+            - ROLE_ADMIN_STORE_CREDENTIAL_VIEW
+        ROLE_ADMIN_STORE_CREDENTIAL_EDITOR:
+            - ROLE_ADMIN_STORE_CREDENTIAL_EDIT    
+        ROLE_ADMIN_STORE_CREDENTIAL_CREATE:
+            - ROLE_ADMIN_STORE_CREDENTIAL_CREATE     
+        ROLE_ADMIN_STORE_CREDENTIAL_ALL:
+            - ROLE_ADMIN_STORE_CREDENTIAL_LIST
+            - ROLE_ADMIN_STORE_CREDENTIAL_VIEW
+            - ROLE_ADMIN_STORE_CREDENTIAL_EDITOR
+            - ROLE_ADMIN_STORE_CREDENTIAL_CREATE  
+            
+#        ENTITY CONEXION
+        ROLE_ADMIN_CONEXION_READER:
+            - ROLE_ADMIN_CONEXION_LIST
+            - ROLE_ADMIN_CONEXION_VIEW
+        ROLE_ADMIN_CONEXION_EDITOR:
+            - ROLE_ADMIN_CONEXION_EDIT    
+        ROLE_ADMIN_CONEXION_CREATE:
+            - ROLE_ADMIN_CONEXION_CREATE     
+        ROLE_ADMIN_CONEXION_ALL:
+            - ROLE_ADMIN_CONEXION_LIST
+            - ROLE_ADMIN_CONEXION_VIEW
+            - ROLE_ADMIN_CONEXION_EDITOR
+            - ROLE_ADMIN_CONEXION_CREATE    
+            
+#          ENTITY STORE ENTITY TYPE
+        ROLE_ADMIN_STORE_ENTITY_TYPE:
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_LIST
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_VIEW
+        ROLE_ADMIN_STORE_ENTITY_TYPE_EDITOR:
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_EDIT    
+        ROLE_ADMIN_STORE_ENTITY_TYPE_CREATE:
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_CREATE     
+        ROLE_ADMIN_STORE_ENTITY_TYPE_ALL:
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_LIST
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_VIEW
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_EDITOR
+            - ROLE_ADMIN_STORE_ENTITY_TYPE_CREATE    
+            
+#          ENTITY STORE ENTITY ROLE
+        ROLE_ADMIN_STORE_ENTITY_ROLE:
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_LIST
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_VIEW
+        ROLE_ADMIN_STORE_ENTITY_ROLE_EDITOR:
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_EDIT    
+        ROLE_ADMIN_STORE_ENTITY_ROLE_CREATE:
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_CREATE     
+        ROLE_ADMIN_STORE_ENTITY_ROLE_ALL:
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_LIST
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_VIEW
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_EDITOR
+            - ROLE_ADMIN_STORE_ENTITY_ROLE_CREATE    
+            
+#          ENTITY STORE MIGRATION
+        ROLE_ADMIN_STORE_MIGRATION:
+            - ROLE_ADMIN_STORE_MIGRATION_LIST
+            - ROLE_ADMIN_STORE_MIGRATION_VIEW
+        ROLE_ADMIN_STORE_MIGRATION_EDITOR:
+            - ROLE_ADMIN_STORE_MIGRATION_EDIT    
+        ROLE_ADMIN_STORE_MIGRATION_CREATE:
+            - ROLE_ADMIN_STORE_MIGRATION_CREATE     
+        ROLE_ADMIN_STORE_MIGRATION_ALL:
+            - ROLE_ADMIN_STORE_MIGRATION_LIST
+            - ROLE_ADMIN_STORE_MIGRATION_VIEW
+            - ROLE_ADMIN_STORE_MIGRATION_EDITOR
+            - ROLE_ADMIN_STORE_MIGRATION_CREATE        
+            
+#          ENTITY MAPPING CATEGORY
+        ROLE_ADMIN_MAPPING_CATEGORY:
+            - ROLE_ADMIN_MAPPING_CATEGORY_LIST
+            - ROLE_ADMIN_MAPPING_CATEGORY_VIEW
+        ROLE_ADMIN_MAPPING_CATEGORY_EDITOR:
+            - ROLE_ADMIN_MAPPING_CATEGORY_EDIT    
+        ROLE_ADMIN_MAPPING_CATEGORY_CREATE:
+            - ROLE_ADMIN_MAPPING_CATEGORY_CREATE     
+        ROLE_ADMIN_MAPPING_CATEGORY_ALL:
+            - ROLE_ADMIN_MAPPING_CATEGORY_LIST
+            - ROLE_ADMIN_MAPPING_CATEGORY_VIEW
+            - ROLE_ADMIN_MAPPING_CATEGORY_EDITOR
+            - ROLE_ADMIN_MAPPING_CATEGORY_CREATE         
+            
+#        ENTITY AUTHORIZATION
+#        ROLE_ADMIN_AUTHORIZATION_READER:
+#            - ROLE_ADMIN_AUTHORIZATION_LIST
+#            - ROLE_ADMIN_AUTHORIZATION_VIEW
+#        ROLE_ADMIN_AUTHORIZATION_EDITOR:
+#            - ROLE_ADMIN_AUTHORIZATION_EDIT    
+#        ROLE_ADMIN_AUTHORIZATION_CREATE:
+#            - ROLE_ADMIN_AUTHORIZATION_CREATE     
+#        ROLE_ADMIN_AUTHORIZATION_ALL:
+#            - ROLE_ADMIN_AUTHORIZATION_LIST
+#            - ROLE_ADMIN_AUTHORIZATION_VIEW
+#            - ROLE_ADMIN_AUTHORIZATION_EDITOR
+#            - ROLE_ADMIN_AUTHORIZATION_CREATE  
+            
+#        ENTITY MARKETPLACE
+        ROLE_ADMIN_MARKETPLACE_READER:
+            - ROLE_ADMIN_MARKETPLACE_LIST
+            - ROLE_ADMIN_MARKETPLACE_VIEW
+        ROLE_ADMIN_MARKETPLACE_EDITOR:
+            - ROLE_ADMIN_MARKETPLACE_EDIT    
+        ROLE_ADMIN_MARKETPLACE_CREATE:
+            - ROLE_ADMIN_MARKETPLACE_CREATE     
+        ROLE_ADMIN_MARKETPLACE_ALL:
+            - ROLE_ADMIN_MARKETPLACE_LIST
+            - ROLE_ADMIN_MARKETPLACE_VIEW
+            - ROLE_ADMIN_MARKETPLACE_EDITOR
+            - ROLE_ADMIN_MARKETPLACE_CREATE    
+            
+#        ENTITY MARKETPLACE CATEGORY
+        ROLE_ADMIN_MARKETPLACE_CATEGORY_READER:
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_LIST
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_VIEW
+        ROLE_ADMIN_MARKETPLACE_CATEGORY_EDITOR:
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_EDIT    
+        ROLE_ADMIN_MARKETPLACE_CATEGORY_CREATE:
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_CREATE     
+        ROLE_ADMIN_MARKETPLACE_CATEGORY_ALL:
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_LIST
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_VIEW
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_EDITOR
+            - ROLE_ADMIN_MARKETPLACE_CATEGORY_CREATE    
+
+#         ENTITY STORE CREDENTIAL
+        ROLE_ADMIN_STORE_CATEGORY_READER:
+            - ROLE_ADMIN_STORE_CATEGORY_LIST
+            - ROLE_ADMIN_STORE_CATEGORY_VIEW
+        ROLE_ADMIN_STORE_CATEGORY_EDITOR:
+            - ROLE_ADMIN_STORE_CATEGORY_EDIT    
+        ROLE_ADMIN_STORE_CATEGORY_CREATE:
+            - ROLE_ADMIN_STORE_CATEGORY_CREATE     
+        ROLE_ADMIN_STORE_CATEGORY_ALL:
+            - ROLE_ADMIN_STORE_CATEGORY_LIST
+            - ROLE_ADMIN_STORE_CATEGORY_VIEW
+            - ROLE_ADMIN_STORE_CATEGORY_EDITOR
+            - ROLE_ADMIN_STORE_CATEGORY_CREATE      
+

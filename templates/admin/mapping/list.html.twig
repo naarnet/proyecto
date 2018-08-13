@@ -1,0 +1,45 @@
+{#
+
+This file is part of the Sonata package.
+
+(c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+
+#}
+
+{% extends '@SonataAdmin/CRUD/base_list.html.twig' %}
+{% block list_table %}
+    <div class="modal fade" id="field_dialog_test" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+   </div>
+    {{ parent() }}
+{% endblock %}    
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.edit_link').click(function () {
+                var url = $(this).attr('data-href');
+                showDialog(url);
+{#                return false;#}
+            })
+        });
+        function showDialog(url) {
+            $(".modal-body").load(url);
+            $("#field_dialog_test").modal();
+            Admin.setup_list_modal(field_dialog_test);
+        }
+    </script>
+    {#    <script src="{{ asset('bundles/pptest/admin/js/myscripts.js') }}" type="text/javascript"></script>#}
+{% endblock %}

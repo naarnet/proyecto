@@ -64,15 +64,13 @@ class StoreMigrationAdminController extends Controller
                 ->findBy(
                 array('store' => $migration->getStore()));
 
-        foreach ($storeCategory as $category)
-        {
+        foreach ($storeCategory as $category) {
             $mappingCategory = $this->_entityManager->getRepository(MappingCategory::class)
                     ->findOneBy(array(
                 'store_category' => $category,
                 'store_migration' => $migration,
             ));
-            if (!$mappingCategory)
-            {
+            if (!$mappingCategory) {
                 $mappingCategory = new MappingCategory();
                 $mappingCategory->setStoreCategory($category);
                 $mappingCategory->setStoreMigration($migration);

@@ -28,6 +28,7 @@ sonata_admin:
         groups:
             sonata_admin.group.admin: 
                 label: Administración
+                icon: '<i class="fa fa-database"></i>'
                 items: 
                     - admin.user
                     - admin.role
@@ -43,7 +44,7 @@ sonata_admin:
                 items: 
                     - admin.store 
                     - admin.store_migration
-#                    - admin.store_credential
+                    - admin.store_credential
                     - admin.store_category
                     - admin.marketplace
                     - admin.marketplace_category
@@ -77,7 +78,6 @@ sonata_admin:
         extra_stylesheets:
             - bundles/sonatatranslation/css/sonata-translation.css    
         javascripts:
-
             # The default javascript list:
             - 'bundles/sonatacore/vendor/jquery/dist/jquery.min.js'
             - 'bundles/sonataadmin/vendor/jquery.scrollTo/jquery.scrollTo.min.js'
@@ -129,6 +129,15 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: Gestor de Tienda ,label: Store }
         public: true
+        calls:
+            - [addChild,['@admin.store_credential','store']]
+      #   Sonata Admin Authorization        
+    admin.store_credential:
+        class: App\Admin\StoreCredentialAdmin
+        arguments: [~, App\Entity\StoreCredential, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Store Credential }
+        public: true        
         
 #   Sonata Admin Conexion        
     admin.conexion:
@@ -162,13 +171,7 @@ services:
             - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Migration}
         public: true       
         
-        #   Sonata Admin Authorization        
-#    admin.store_credential:
-#        class: App\Admin\StoreCredentialAdmin
-#        arguments: [~, App\Entity\StoreCredential, ~]
-#        tags:
-#            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Store Credential }
-#        public: true
+      
         
 #   Sonata Admin Authorization        
 #    admin.authorization:

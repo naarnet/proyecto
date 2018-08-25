@@ -29,10 +29,13 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StoreRepository")
  */
@@ -57,21 +60,36 @@ class Store
      * @JoinColumn(name="store_entity_role_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=false)
      */
     protected $store_entity_role;
-    
+
     /**
      * @Assert\NotNull()
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=false)
      */
     protected $user;
-    
+
     /**
      * @ManyToOne(targetEntity="Conexion")
      * @JoinColumn(name="conexion_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=false)
      */
     protected $conexion;
-    
-    
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\Country()
+     */
+    protected $country;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $language;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $currency;
+
     public function getId()
     {
         return $this->id;
@@ -90,7 +108,6 @@ class Store
     }
 
     /**
-     * 
      * @param type $user
      */
     public function setUser($user)
@@ -106,14 +123,13 @@ class Store
     {
         return $this->user;
     }
-    
+
     public function __toString()
     {
         return (string) $this->getName();
     }
 
     /**
-     * 
      * @param type $conexion
      */
     public function setConexion($conexion)
@@ -122,16 +138,14 @@ class Store
     }
 
     /**
-     * 
      * @return type
      */
     public function getConexion()
     {
         return $this->conexion;
     }
-    
+
     /**
-     * 
      * @param type $store_entity_role
      */
     public function setStoreEntityRole($store_entity_role)
@@ -140,12 +154,59 @@ class Store
     }
 
     /**
-     * 
      * @return type
      */
     public function getStoreEntityRole()
     {
         return $this->store_entity_role;
+    }
+
+    /**
+     * @return type
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param type $country
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+    }
+
+    /**
+     * @return type
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param type $currency
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+    }
+
+    /**
+     * @return type
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * @param type $language
+     */
+    public function setLanguage($language)
+    {
+        $this->language = $language;
     }
 
 }

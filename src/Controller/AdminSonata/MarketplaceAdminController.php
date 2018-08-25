@@ -84,7 +84,7 @@ class MarketplaceAdminController extends Controller
         return new RedirectResponse($this->admin->generateUrl('list'));
     }
 
-    public function createCategoryByCollection($category, $marketplaceId,$parentCategoryId = null)
+    public function createCategoryByCollection($category, $marketplaceId, $parentCategoryId = null)
     {
 
         if (isset($category['id']) && !empty($category['id'])) {
@@ -97,8 +97,7 @@ class MarketplaceAdminController extends Controller
             $this->_logger->log(100, print_r(count($childrenData), true));
             if (isset($childrenData['children_categories']) && !empty($childrenData['children_categories'])) {
                 $childrenCategories = $childrenData['children_categories'];
-                foreach ($childrenCategories as $children)
-                {
+                foreach ($childrenCategories as $children) {
                     $this->createCategoryByCollection($children, $marketplaceId, $parentCategoryId);
                 }
             }

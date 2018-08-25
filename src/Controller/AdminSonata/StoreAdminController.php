@@ -43,9 +43,9 @@ class StoreAdminController extends Controller
      * @param LoggerInterface $logger
      */
     public function __construct(
-        TokenStorageInterface $tokenStorage,
-        LoggerInterface $logger
-    ) {
+    TokenStorageInterface $tokenStorage, LoggerInterface $logger
+    )
+    {
         $this->_user = $tokenStorage->getToken()->getUser();
         $this->_logger = $logger;
     }
@@ -61,7 +61,7 @@ class StoreAdminController extends Controller
 
 
         $data = array(
-            'username' => "magento",
+            'username' => "admin",
             'password' => 'magento2'
         );
 
@@ -76,8 +76,7 @@ class StoreAdminController extends Controller
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 29);
 
-        if (curl_errno($ch))
-        {
+        if (curl_errno($ch)) {
             $response['status_time'] = '501';
             $response['connect_time'] = 'Time out';
             $view = $this->view($response, '501');
@@ -88,12 +87,10 @@ class StoreAdminController extends Controller
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($status !== 200)
-        {
+        if ($status !== 200) {
             $this->_logger->log(100, print_r($status, true));
             $this->addFlash('sonata_flash_error', 'Error Conexion To Import Categories from Store');
-        } else
-        {
+        } else {
             $this->_logger->log(100, print_r('$status', true));
             $this->_logger->log(100, print_r($status, true));
 
@@ -108,8 +105,7 @@ class StoreAdminController extends Controller
             curl_setopt($chProduct, CURLOPT_FOLLOWLOCATION, 1);
             curl_setopt($chProduct, CURLOPT_TIMEOUT, 29);
 
-            if (curl_errno($chProduct))
-            {
+            if (curl_errno($chProduct)) {
 
                 $response['status_time'] = '501';
                 $response['connect_time'] = 'Time out';
@@ -124,8 +120,7 @@ class StoreAdminController extends Controller
             $categories = json_decode($result, true);
             $cat_arrays = [];
 
-            if ($categories && is_array($categories) && !empty($categories))
-            {
+            if ($categories && is_array($categories) && !empty($categories)) {
                 $cat_arrays = $this->getArrayRecursive($categories, []);
             }
 
@@ -139,10 +134,8 @@ class StoreAdminController extends Controller
 
     public function createCategoryByCollection($cat_arrays, $storeId)
     {
-        foreach ($cat_arrays as $category)
-        {
-            if ($this->isStoreCategoryReadyToSave($category))
-            {
+        foreach ($cat_arrays as $category) {
+            if ($this->isStoreCategoryReadyToSave($category)) {
                 $entityManager = $this->getDoctrine()->getManager();
                 $storeCategory = $entityManager->getRepository(StoreCategory::class)
                         ->findOneBy(
@@ -158,23 +151,19 @@ class StoreAdminController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $store = $entityManager->getRepository(Store::class)->find($storeId);
 
-        if (!is_null($storeCategory) && is_array($category) && !empty($category))
-        {
+        if (!is_null($storeCategory) && is_array($category) && !empty($category)) {
             if (
                     $storeCategory->getStoreCategoryId() === $category['id'] &&
                     $storeCategory->getName() === $category['name'] &&
                     $storeCategory->getParentCategoryId() === $category['parent_id'] &&
                     $storeCategory->getIsActive() === $category['is_active']
-            )
-            {
+            ) {
                 $saveStore = false;
             }
-        } else
-        {
+        } else {
             $storeCategory = new StoreCategory();
         }
-        if ($saveStore && $store)
-        {
+        if ($saveStore && $store) {
             $storeCategory->setIsActive($category['is_active']);
             $storeCategory->setName($category['name']);
             $storeCategory->setParentCategoryId($category['parent_id']);
@@ -196,13 +185,10 @@ class StoreAdminController extends Controller
     public function isStoreCategoryReadyToSave($category)
     {
         $isReady = false;
-        foreach ($category as $value)
-        {
-            if (isset($value) && !empty($value))
-            {
+        foreach ($category as $value) {
+            if (isset($value) && !empty($value)) {
                 $isReady = true;
-            } else
-            {
+            } else {
                 return false;
             }
         }
@@ -211,15 +197,12 @@ class StoreAdminController extends Controller
 
     function getArrayRecursive($categories, $categories_arrays)
     {
-        if (is_array($categories))
-        {
+        if (is_array($categories)) {
             $categories_arrays[] = $this->getValuesFromArray($categories);
         }
-        if (is_array($categories) && isset($categories['children_data']) && !empty($categories['children_data']))
-        {
+        if (is_array($categories) && isset($categories['children_data']) && !empty($categories['children_data'])) {
             $children = $categories['children_data'];
-            foreach ($children as $cat)
-            {
+            foreach ($children as $cat) {
                 $categories_arrays = $this->getArrayRecursive($cat, $categories_arrays);
             }
         }
@@ -229,8 +212,7 @@ class StoreAdminController extends Controller
     public function getValuesFromArray($array)
     {
         $temp = [];
-        if (is_array($array) && !empty($array))
-        {
+        if (is_array($array) && !empty($array)) {
             $temp['id'] = isset($array['id']) ? $array['id'] : '';
             $temp['parent_id'] = isset($array['parent_id']) ? $array['parent_id'] : '';
             $temp['name'] = isset($array['name']) ? $array['name'] : '';
@@ -249,12 +231,9 @@ class StoreAdminController extends Controller
      */
     public function hasRoleAdmin($roles)
     {
-        if (is_array($roles) && !empty($roles))
-        {
-            foreach ($roles as $rol)
-            {
-                if ($rol->getName() && $rol->getName() === self::ADMIN_ROLE)
-                {
+        if (is_array($roles) && !empty($roles)) {
+            foreach ($roles as $rol) {
+                if ($rol->getName() && $rol->getName() === self::ADMIN_ROLE) {
                     return true;
                 }
             }
@@ -283,16 +262,22 @@ class StoreAdminController extends Controller
     {
         $this->setUserToStore($object);
     }
-    
+
     /**
      * Set User to Store
      * @param type $object
      */
     public function setUserToStore($object)
     {
-        if ($this->_user->getRoles() && !$this->hasRoleAdmin($this->_user->getRoles()))
-        {
+        if ($this->_user->getRoles() && !$this->hasRoleAdmin($this->_user->getRoles())) {
             $object->setUser($this->_user);
+        }
+    }
+    
+    public function preUpdate($object)
+    {
+        foreach ($object->getStoreCredential() as $credential) {
+            $credential->setStore($object);
         }
     }
 

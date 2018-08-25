@@ -25,15 +25,37 @@ class StoreCredentialAdmin extends AbstractAdmin
 
     public $baseRouteName = null;
     protected $translationDomain = 'SonataUserBundle';
+    
+    
+   
+
+
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        if ($this->isChild()) {
+            return;
+        }
+
+        // This is the route configuration as a parent
+        $collection->clear();
+
+    }
+
+    // OR
+
+    public function getParentAssociationMapping()
+    {
+        return 'store';
+    }
 
     /**
      * Route to action disable
      * @param RouteCollection $collection
      */
-    protected function configureRoutes(RouteCollection $collection)
-    {
-        $collection->add('disable', $this->getRouterIdParameter() . '/disable');
-    }
+//    protected function configureRoutes(RouteCollection $collection)
+//    {
+//        $collection->add('disable', $this->getRouterIdParameter() . '/disable');
+//    }
 
     /**
      * Form View for User Entity 
@@ -53,12 +75,12 @@ class StoreCredentialAdmin extends AbstractAdmin
                     'required' => true,
                     'help' => 'Asigne una Tienda'))
                 ->end();
-        $formMapper
-                ->add('conexion', ModelListType::class, array(
-                    'label' => 'Modo de Conexión',
-                    'required' => true,
-                    'help' => 'Conexion Mode'))
-                ->end();
+//        $formMapper
+//                ->add('conexion', ModelListType::class, array(
+//                    'label' => 'Modo de Conexión',
+//                    'required' => true,
+//                    'help' => 'Conexion Mode'))
+//                ->end();
     }
 
     /**
@@ -72,7 +94,7 @@ class StoreCredentialAdmin extends AbstractAdmin
         $datagridMapper
                 ->add('username', null, array('label' => 'UserName'))
                 ->add('api_url', null, array('label' => 'Api Url'))
-                ->add('conexion', null, array('label' => 'Conexion Mode'))
+//                ->add('conexion', null, array('label' => 'Conexion Mode'))
         ;
         if (!$this->hasRoleAdmin($user->getRoles())) {
             $datagridMapper->add('store', null, array('label' => 'Store'), EntityType::class, array(
@@ -98,7 +120,7 @@ class StoreCredentialAdmin extends AbstractAdmin
                 ->add('username', TextType::class, array('label' => 'UserName'))
                 ->add('password', TextType::class, array('label' => 'Password'))
                 ->add('api_url', TextType::class, array('label' => 'Api Url'))
-                ->add('conexion', null, array('label' => 'Conexion Mode'))
+//                ->add('conexion', null, array('label' => 'Conexion Mode'))
         ;
     }
 
@@ -114,7 +136,7 @@ class StoreCredentialAdmin extends AbstractAdmin
                 ->add('api_url', TextType::class, array('label' => 'Api Url'))
                 ->add('username', TextType::class, array('label' => 'UserName'))
                 ->add('password', TextType::class, array('label' => 'Password'))
-                ->add('conexion', null, array('label' => 'Conexion Mode'))
+//                ->add('conexion', null, array('label' => 'Conexion Mode'))
                 ->add('_action', 'actions', array(
                     'label' => 'Acciones',
                     'actions' => array(

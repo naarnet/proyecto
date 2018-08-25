@@ -34,12 +34,16 @@ class MarketPlaceCategories extends Command
      */
     protected $_entityManager;
     
+    /**
+     * @param ContainerInterface $container
+     * @param LoggerInterface $logger
+     * @param type $name
+     */
     public function __construct(
-        $name = null,
         ContainerInterface $container,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        $name = null
     ) {
-//        $this->_container = $container;
         $this->_logger = $logger;
         $this->_entityManager = $container->get('doctrine')->getManager();
         parent::__construct($name);
@@ -89,13 +93,10 @@ class MarketPlaceCategories extends Command
     public function importCategories($marketPlace)
     {
         $categories = $this->getMarketPlaceCategory();
-        foreach ($categories as $category)
-        {
-            $this->_logger->log(100,print_r($category,true));
-//            $this->createCategoryByCollection($category, $marketPlace, null,null);
-            $this->_logger->log(100,print_r('bambiokokok',true));
+        foreach ($categories as $category) {
+            $this->_logger->log(100, print_r($category, true));
+            $this->createCategoryByCollection($category, $marketPlace, null,null);
         }
-            exit();
     }
 
     public function setStoreToSave($category, $marketPlace, $category_parent_id = null,$category_parent_name = null)

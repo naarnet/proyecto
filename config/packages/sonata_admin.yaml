@@ -102,6 +102,8 @@ sonata_admin:
             - 'bundles/sonataadmin/sidebar.js'    
                     
 services:
+    App\Helper\BaseHelper:
+        public: true
 #   Sonata Admin User
     admin.user:
         class: App\Admin\UserAdmin
@@ -129,8 +131,8 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: Gestor de Tienda ,label: Store }
         public: true
-        calls:
-            - [addChild,['@admin.store_credential','store']]
+#        calls:
+#            - [addChild,['@admin.store_credential','store']]
       #   Sonata Admin Authorization        
     admin.store_credential:
         class: App\Admin\StoreCredentialAdmin

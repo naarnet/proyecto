@@ -32,7 +32,6 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -57,14 +56,13 @@ class Store
 
     /**
      * @ManyToOne(targetEntity="StoreEntityRole")
-     * @JoinColumn(name="store_entity_role_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=false)
+     * @JoinColumn(name="store_entity_role_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=true)
      */
     protected $store_entity_role;
 
     /**
-     * @Assert\NotNull()
      * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="user_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=false)
+     * @JoinColumn(name="user_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=true)
      */
     protected $user;
 
@@ -73,6 +71,11 @@ class Store
      * @JoinColumn(name="conexion_id",referencedColumnName="id" ,onDelete="CASCADE",nullable=false)
      */
     protected $conexion;
+
+    /**
+     * @ORM\OneToMany(targetEntity="StoreEntityAttribute", mappedBy="store",cascade={"remove"})
+     */
+    protected $store_entity_attribute;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -89,6 +92,12 @@ class Store
      * @ORM\Column(type="string", length=255)
      */
     protected $currency;
+
+    public function __construct()
+    {
+        $this->store_credential = new ArrayCollection();
+        $this->store_entity_attribute = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -207,6 +216,119 @@ class Store
     public function setLanguage($language)
     {
         $this->language = $language;
+    }
+
+    public function getStoreEntityAttribute()
+    {
+        return $this->store_entity_attribute;
+    }
+
+    public function setStoreEntityAttribute($store_entity_attribute)
+    {
+        $est[] = $store_entity_attribute;
+        $this->store_entity_attribute = $est;
+    }
+    
+    public function getUrl()
+    {
+        $url = null;
+        foreach ($this->store_entity_attribute as $attribute)
+        {
+            if ($attribute->getAttributeCode() === 'url')
+            {
+                $url = $attribute->getValue();
+                break;
+            }
+        }
+        return $url;
+    }
+
+    public function setUrl($url)
+    {
+        foreach ($this->store_entity_attribute as $attribute)
+        {
+            if ($attribute->getAttributeCode() === 'url' && $attribute->getValue() !== $url)
+            {
+                $attribute->setValue($url);
+                break;
+            }
+        }
+    }
+
+    public function getBasicOauth()
+    {
+        $oauth = [];
+        $oauth['oauth_username'] = $this->getOauthUsername();
+        $oauth['oauth_password'] = $this->getOauthPassword();
+        return $oauth;
+    }
+
+    public function setBasicOauth($oauth)
+    {
+        return $this;
+    }
+
+    public function getCredential()
+    {
+        
+    }
+
+    public function setCredential($credential)
+    {
+
+        return $this;
+    }
+
+    public function getOauthUsername()
+    {
+        $username = '';
+        foreach ($this->store_entity_attribute as $attribute)
+        {
+            if ($attribute->getAttributeCode() === 'oauth_username')
+            {
+                $username = $attribute->getValue();
+                break;
+            }
+        }
+        return $username;
+    }
+
+    public function setOauthUser($oauth_username)
+    {
+        foreach ($this->store_entity_attribute as $attribute)
+        {
+            if ($attribute->getAttributeCode() === 'oauth_username')
+            {
+                $attribute->setValue($oauth_username);
+                break;
+            }
+        }
+    }
+
+    public function getOauthPassword()
+    {
+        $password = '';
+        foreach ($this->store_entity_attribute as $attribute)
+        {
+            if ($attribute->getAttributeCode() === 'oauth_password')
+            {
+                $password = $attribute->getValue();
+                break;
+            }
+        }
+        return $password;
+    }
+
+    public function setOauthPassword($password)
+    {
+        foreach ($this->store_entity_attribute as $attribute)
+        {
+            if ($attribute->getAttributeCode() === 'oauth_password')
+            {
+                $attribute->setValue($password);
+                break;
+            }
+        }
     }
 
 }

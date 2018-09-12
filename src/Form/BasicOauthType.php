@@ -13,13 +13,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class StoreCredentialType extends AbstractType
+class BasicOauthType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-                ->add('api_url', TextType::class, array('label' => 'Api Url'))
                 ->add('username', TextType::class, array('label' => 'UserName'))
                 ->add('password', TextType::class, array('label' => 'Password'))
         ;
@@ -28,7 +27,8 @@ class StoreCredentialType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => \App\Entity\StoreCredential::class,
+            'data_class' => null,
+            'property' => false
         ]);
     }
 

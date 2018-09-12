@@ -23,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 //use Symfony\Component\Form\Extension\Core\Type\;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 class UserAdmin extends AbstractAdmin
 {
 
@@ -82,7 +83,7 @@ class UserAdmin extends AbstractAdmin
                 ->add('name', null, array('label' => 'Name'))
                 ->add('lastName', null, array('label' => 'Apellidos'))
                 ->add('email', null, array('label' => 'Correo Electrónico'))
-                ->add('user_roles', null, array('label' => 'Rol'), EntityType::class , array(
+                ->add('user_roles', null, array('label' => 'Rol'), EntityType::class, array(
                     'class' => 'App\Entity\Role'
         ));
     }

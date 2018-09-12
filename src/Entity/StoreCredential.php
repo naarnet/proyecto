@@ -25,10 +25,10 @@ class StoreCredential
     private $api_url;
 
     /**
-     * @ManyToOne(targetEntity="Store")
-     * @JoinColumn(name="store_id",referencedColumnName="id" ,onDelete="CASCADE")
+     * @ManyToOne(targetEntity="Store",inversedBy="store_credential",cascade={"persist", "remove"})
+     * @JoinColumn(referencedColumnName="id", nullable=false)
      */
-    private $store;
+//    protected $store;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -109,7 +109,7 @@ class StoreCredential
      */
     public function __toString()
     {
-        return (string)$this->api_url;
+        return (string) $this->api_url;
     }
 
 }

@@ -38,6 +38,7 @@ sonata_admin:
                     - admin.store_entity_role
 #                    - admin.marketplace_category
                     - admin.mapping_category
+                    - admin.restaurante
                 roles: [ROLE_ADMIN]
             sonata_admin.group.store: 
                 label: Gestor de Tienda
@@ -209,6 +210,12 @@ services:
         arguments: [~, App\Entity\MappingCategory, ~]
         tags:
             - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Mapeo de Categorías }
+        public: true    
+    admin.restaurante:
+        class: App\Admin\RestauranteAdmin
+        arguments: [~, App\Entity\Restaurante, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Listado de Restaurante }
         public: true    
         
 

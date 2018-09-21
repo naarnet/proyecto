@@ -15,3 +15,8 @@ app.swagger_ui:
 #NelmioApiDocBundle:
 #    resource: "@NelmioApiDocBundle/Resources/config/routing/swaggerui.xml"
 #    prefix:   /api/doc    
+restaurantes:
+    type:     rest
+#    host:     m.example.com
+    resource: App\Controller\Api\RestauranteController
+    # methods: GET

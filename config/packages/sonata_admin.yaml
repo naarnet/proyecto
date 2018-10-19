@@ -38,34 +38,36 @@ sonata_admin:
                     - admin.store_entity_role
 #                    - admin.marketplace_category
                     - admin.mapping_category
+                    - admin.marketplace
                     - admin.restaurante
                 roles: [ROLE_ADMIN]
             sonata_admin.group.store: 
                 label: Gestor de Tienda
+                icon: '<i class="fa fa-cogs"></i>'
                 items: 
                     - admin.store 
                     - admin.store_migration
                     - admin.store_credential
                     - admin.store_category
-                    - admin.marketplace
                     - admin.marketplace_category
                     - admin.mapping_category
+                    - admin.channel_connector
                 roles: [ROLE_ADMIN ,ROLE_STORE]
         blocks:
             -   
-                position: center
+                position: left
                 type: sonata.block.service.text
                 settings:
                     content: >
                         <h2><code style="#428bca">Integración Marketplace </code></h2>
             -   
-                position: left
+                position: right
                 type: sonata.admin.block.admin_list
                 settings: 
                     groups: [sonata_admin.group.admin]
                     
             -   
-                position: left
+                position: right
                 type: sonata.admin.block.admin_list
                 settings: 
                     groups: [sonata_admin.group.store]
@@ -216,6 +218,12 @@ services:
         arguments: [~, App\Entity\Restaurante, ~]
         tags:
             - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Listado de Restaurante }
+        public: true    
+    admin.channel_connector:
+        class: App\Admin\ChannelConnectorAdmin
+        arguments: [~, App\Entity\ChannelConnector, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm,group: Gestor de Tienda , label: Listado de Canales }
         public: true    
         
 

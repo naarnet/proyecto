@@ -25,7 +25,7 @@ class StoreAdminController extends Controller
     const ADMIN_ROLE = 'ROLE_ADMIN';
     const SONATA_FLASH_ERROR = 'sonata_flash_error';
     const SONATA_FLASH_SUCCESS = 'sonata_flash_success';
-    
+
     /**
      * CONSTANT ERROR STORE CONNECTION
      */
@@ -35,14 +35,15 @@ class StoreAdminController extends Controller
     const ERROR_IMPORT_CATEGORY = 'Error Connection To Import Categories from Store';
     const ERROR_CREDENTIALS_CONNECTION = 'Error when connecting, Verify credentials and try again. ';
     const IMPORTED_CATEGORY_SUCCESS = 'Categories imported successfully';
-    
-    
+
+
     /**
      * CONSTANT ACTIONS 
      */
     const ACTION_LIST = 'list';
     const ACTION_CREATE = 'create';
-    
+    const ACTION_EDIT = 'edit';
+
     /**
      * @var Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
      */
@@ -62,7 +63,7 @@ class StoreAdminController extends Controller
      * @var App\Helper\BaseHelper; 
      */
     protected $_helperData;
-    
+
     /**
      *
      * @var App\Model\Conexion\BasicOauthConnection
@@ -78,7 +79,7 @@ class StoreAdminController extends Controller
         TokenStorageInterface $tokenStorage,
         LoggerInterface $logger,
         BaseHelper $baseHelper,
-        BasicOauthConnection $basicOauthConnection    
+        BasicOauthConnection $basicOauthConnection
     ) {
         $this->_user = $tokenStorage->getToken()->getUser();
         $this->_logger = $logger;
@@ -88,7 +89,7 @@ class StoreAdminController extends Controller
 
     public function importProductAction()
     {
-        
+
     }
 
     /**
@@ -107,8 +108,7 @@ class StoreAdminController extends Controller
         $ch = $this->_basicOauthConnection->getStoreConnection($data, $urlToken);
         
         //Check if request connection is not false
-        if (!$ch)
-        {
+        if (!$ch) {
             $this->addFlash(self::SONATA_FLASH_ERROR, self::ERROR_TIME_OUT);
             return new RedirectResponse($this->admin->generateUrl(self::ACTION_LIST));
         }
@@ -117,24 +117,21 @@ class StoreAdminController extends Controller
         $json_token = curl_exec($ch);
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
-        //Check if connection response status is Ok (ok===200)
-        if ($status !== 200)
-        {
+
+        if ($status !== 200) {
             $this->addFlash(self::SONATA_FLASH_ERROR, self::ERROR_STORE_CONNECTION);
             return new RedirectResponse($this->admin->generateUrl(self::ACTION_LIST));
-        } else
-        {
+        } else {
             //Get Token from request 
             $jsonToken = json_decode($json_token, true);
             $chCategories = $this->_basicOauthConnection->getStoreCategoryConnection($store->getUrl(), $jsonToken);
-            $this->prepareResultCategories($chCategories,$storeId);
-            
+            $this->prepareResultCategories($chCategories, $storeId);
+
         }
 
         return new RedirectResponse($this->admin->generateUrl(self::ACTION_LIST));
     }
-    
+
     /**
      * Prepare result response to save categories
      * @param type $chCategories
@@ -143,8 +140,7 @@ class StoreAdminController extends Controller
      */
     public function prepareResultCategories($chCategories, $storeId)
     {
-        if (!$chCategories)
-        {
+        if (!$chCategories) {
             $this->addFlash(self::SONATA_FLASH_ERROR, self::ERROR_IMPORT_CATEGORY_TIME_OUT);
             return new RedirectResponse($this->admin->generateUrl(self::ACTION_LIST));
         }
@@ -153,12 +149,10 @@ class StoreAdminController extends Controller
         $result = curl_exec($chCategories);
         $statusCategory = curl_getinfo($chCategories, CURLINFO_HTTP_CODE);
 
-        if ($statusCategory !== 200)
-        {
+        if ($statusCategory !== 200) {
             $this->addFlash(self::SONATA_FLASH_ERROR, self::ERROR_IMPORT_CATEGORY);
             return new RedirectResponse($this->admin->generateUrl(self::ACTION_LIST));
-        } else
-        {
+        } else {
 
             curl_close($chCategories);
 
@@ -168,7 +162,7 @@ class StoreAdminController extends Controller
             $this->addFlash(self::SONATA_FLASH_SUCCESS, self::IMPORTED_CATEGORY_SUCCESS);
         }
     }
-    
+
     /**
      * Return store categories as array 
      * @param type $categories
@@ -177,8 +171,7 @@ class StoreAdminController extends Controller
     public function getCategories($categories)
     {
         $cat_arrays = [];
-        if ($categories && is_array($categories) && !empty($categories))
-        {
+        if ($categories && is_array($categories) && !empty($categories)) {
             $cat_arrays = $this->getArrayRecursive($categories, []);
         }
         return $cat_arrays;
@@ -191,14 +184,13 @@ class StoreAdminController extends Controller
      */
     public function createCategoryByCollection($cat_arrays, $storeId)
     {
-        foreach ($cat_arrays as $category)
-        {
-            if ($this->isStoreCategoryReadyToSave($category))
-            {
+        foreach ($cat_arrays as $category) {
+            if ($this->isStoreCategoryReadyToSave($category)) {
                 $entityManager = $this->getDoctrine()->getManager();
                 $storeCategory = $entityManager->getRepository(StoreCategory::class)
-                        ->findOneBy(
-                        array('store_category_id' => $category['id'], 'store' => $storeId));
+                    ->findOneBy(
+                        array('store_category_id' => $category['id'], 'store' => $storeId)
+                    );
                 $this->setStoreToSave($storeCategory, $category, $storeId);
             }
         }
@@ -216,23 +208,19 @@ class StoreAdminController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $store = $entityManager->getRepository(Store::class)->find($storeId);
 
-        if (!is_null($storeCategory) && is_array($category) && !empty($category))
-        {
-            if (
-                $storeCategory->getStoreCategoryId() === $category['id'] &&
+        if (!is_null($storeCategory) && is_array($category) && !empty($category)) {
+            if ($storeCategory->getStoreCategoryId() === $category['id'] &&
                 $storeCategory->getName() === $category['name'] &&
                 $storeCategory->getParentCategoryId() === $category['parent_id'] &&
-                $storeCategory->getIsActive() === $category['is_active']
-            ) {
+                $storeCategory->getIsActive() === $category['is_active']) {
                 $saveStore = false;
             }
-        } else
-        {
+        } else {
             $storeCategory = new StoreCategory();
         }
         $this->saveStoreCategory($store, $entityManager, $storeCategory, $category, $saveStore);
     }
-    
+
     /**
      * Save Store Category
      * @param type $store
@@ -243,8 +231,7 @@ class StoreAdminController extends Controller
      */
     public function saveStoreCategory($store, $entityManager, $storeCategory, $category, $saveStore)
     {
-        if ($saveStore && $store)
-        {
+        if ($saveStore && $store) {
             $storeCategory->setIsActive($category['is_active']);
             $storeCategory->setName($category['name']);
             $storeCategory->setParentCategoryId($category['parent_id']);
@@ -266,13 +253,10 @@ class StoreAdminController extends Controller
     public function isStoreCategoryReadyToSave($category)
     {
         $isReady = false;
-        foreach ($category as $value)
-        {
-            if (isset($value) && !empty($value))
-            {
+        foreach ($category as $value) {
+            if (isset($value) && !empty($value)) {
                 $isReady = true;
-            } else
-            {
+            } else {
                 return false;
             }
         }
@@ -281,15 +265,12 @@ class StoreAdminController extends Controller
 
     function getArrayRecursive($categories, $categories_arrays)
     {
-        if (is_array($categories))
-        {
+        if (is_array($categories)) {
             $categories_arrays[] = $this->getValuesFromArray($categories);
         }
-        if (is_array($categories) && isset($categories['children_data']) && !empty($categories['children_data']))
-        {
+        if (is_array($categories) && isset($categories['children_data']) && !empty($categories['children_data'])) {
             $children = $categories['children_data'];
-            foreach ($children as $cat)
-            {
+            foreach ($children as $cat) {
                 $categories_arrays = $this->getArrayRecursive($cat, $categories_arrays);
             }
         }
@@ -299,8 +280,7 @@ class StoreAdminController extends Controller
     public function getValuesFromArray($array)
     {
         $temp = [];
-        if (is_array($array) && !empty($array))
-        {
+        if (is_array($array) && !empty($array)) {
             $temp['id'] = isset($array['id']) ? $array['id'] : '';
             $temp['parent_id'] = isset($array['parent_id']) ? $array['parent_id'] : '';
             $temp['name'] = isset($array['name']) ? $array['name'] : '';
@@ -319,12 +299,9 @@ class StoreAdminController extends Controller
      */
     public function hasRoleAdmin($roles)
     {
-        if (is_array($roles) && !empty($roles))
-        {
-            foreach ($roles as $rol)
-            {
-                if ($rol->getName() && $rol->getName() === self::ADMIN_ROLE)
-                {
+        if (is_array($roles) && !empty($roles)) {
+            foreach ($roles as $rol) {
+                if ($rol->getName() && $rol->getName() === self::ADMIN_ROLE) {
                     return true;
                 }
             }
@@ -344,14 +321,15 @@ class StoreAdminController extends Controller
     {
         $uniqid = $request->query->get(self::REQUEST_UNIQUID);
         $formData = $this->getRequest()->request->get($uniqid);
-
-        if (!empty($formData))
-        {
+        $params = [];
+        if ($this->admin->hasActiveSubClass()) {
+            $params['subclass'] = $request->get('subclass');
+        }
+        if (!empty($formData)) {
             $canConnect = $this->_basicOauthConnection->getConnectionStatus($formData);
-            if (!$canConnect)
-            {
+            if (!$canConnect) {
                 $this->addFlash(self::SONATA_FLASH_ERROR, self::ERROR_CREDENTIALS_CONNECTION);
-                return new RedirectResponse($this->admin->generateUrl(self::ACTION_CREATE, $formData));
+                return new RedirectResponse($this->admin->generateUrl(self::ACTION_CREATE, $params));
             }
         }
         $this->setUserToStore($object);
@@ -365,7 +343,15 @@ class StoreAdminController extends Controller
     {
         $uniqid = $request->query->get(self::REQUEST_UNIQUID);
         $formData = $this->getRequest()->request->get($uniqid);
-        $this->_basicOauthConnection->getFormCredentialData($formData);
+        $data = $this->_basicOauthConnection->getFormCredentialData($formData);
+        $hasCredentialToConnect = $this->_basicOauthConnection->hasCredentialsData($data);
+        if ($hasCredentialToConnect) {
+            $canConnect = $this->_basicOauthConnection->getConnectionStatus($formData);
+            if (!$canConnect) {
+                $this->addFlash(self::SONATA_FLASH_ERROR, self::ERROR_CREDENTIALS_CONNECTION);
+                return new RedirectResponse($this->admin->generateObjectUrl(self::ACTION_EDIT, $object));
+            }
+        }
         $this->setUserToStore($object);
     }
 
@@ -375,8 +361,7 @@ class StoreAdminController extends Controller
      */
     public function setUserToStore($object)
     {
-        if ($this->_user->getRoles() && !$this->hasRoleAdmin($this->_user->getRoles()))
-        {
+        if ($this->_user->getRoles() && !$this->hasRoleAdmin($this->_user->getRoles())) {
             $object->setUser($this->_user);
         }
     }

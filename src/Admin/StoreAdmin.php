@@ -361,6 +361,7 @@ class StoreAdmin extends AbstractAdmin
                 ->tab('Conexion')
                 ->with('Credentials', array(
                     'class' => 'col-md-6',
+                    'required' => true,
                     'box_class' => 'box box-solid box-success',
                     'description' => 'Selecccione la Tienda',))
                 ->add('conexion', ModelListType::class, array(
@@ -370,7 +371,7 @@ class StoreAdmin extends AbstractAdmin
                 ->add('url', TextType::class, array(
                     'label' => 'Store Url',
                     'required' => true,
-                    'help' => 'Insert Store Url '))
+                    'help' => 'Insert Store Url example: http://m22.qbo.tech:8014/ '))
                 ->end()
                 ->with('Parameters', array(
                     'class' => 'col-md-6',
@@ -386,7 +387,7 @@ class StoreAdmin extends AbstractAdmin
                         'basic_oauth' => ['basic_oauth'],
                     ],
                     'placeholder' => 'Select Conexion',
-                    'required' => true
+                    'required' => false
                 ])
                 ->add('basic_oauth', ImmutableArrayType::class, [
                     'label' => ' ', 'required' => false,

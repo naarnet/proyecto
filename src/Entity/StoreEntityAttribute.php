@@ -30,11 +30,6 @@ class StoreEntityAttribute
      * @ORM\Column(type="string", length=255)
      */
     private $attribute_code;
-
-    /**
-     * @OneToOne(targetEntity="StoreEntityAttributeValue")
-     */
-//    private $storeEntityAttributeValue;
     
     /**
      * @ORM\Column(type="string", length=255)
@@ -70,17 +65,6 @@ class StoreEntityAttribute
         return $this;
     }
 
-//    public function getStoreEntityAttributeValue()
-//    {
-//        return $this->storeEntityAttributeValue;
-//    }
-
-//    public function setStoreEntityAttributeValue($storeEntityAttributeValue)
-//    {
-//        $this->storeEntityAttributeValue = $storeEntityAttributeValue;
-//        return $this;
-//    }
-
     public function getValue()
     {
         return $this->value;
@@ -91,10 +75,6 @@ class StoreEntityAttribute
         $this->value = $value;
     }
 
-//    public function __toString()
-//    {
-//        return $this->value;
-//    }
     /**
      * 
      * @return type

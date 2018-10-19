@@ -47,7 +47,6 @@ class MarketplaceAdminController extends Controller
     protected $_parentId = null;
 
     /**
-     * 
      * @param UserPasswordEncoderInterface $encoder
      * @param TokenStorageInterface $tokenStorage
      */
@@ -320,7 +319,6 @@ class MarketplaceAdminController extends Controller
                 $this->admin->getShow();
             }
         }
-
         return parent::createAction();
     }
 

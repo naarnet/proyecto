@@ -23,11 +23,12 @@ class BasicOauthConnection
 
     const CONTENT_TYPE_JSON = 'Content-type: application/json';
     const HEADER_BEARER = 'Authorization: Bearer ';
-    
+    const URL_STORE_TOKEN = 'rest/V1/integration/admin/token';
+
     protected $_logger;
     private $_em;
     protected $_container;
-    
+
     /**
      * @var App\Helper\BaseHelper; 
      */
@@ -43,7 +44,7 @@ class BasicOauthConnection
         LoggerInterface $logger,
         EntityManagerInterface $em,
         ContainerInterface $container,
-        BaseHelper $baseHelper    
+        BaseHelper $baseHelper
     ) {
         $this->_logger = $logger;
         $this->_em = $em;
@@ -66,9 +67,7 @@ class BasicOauthConnection
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 29);
-
-        if (curl_errno($ch))
-        {
+        if (curl_errno($ch)) {
             return false;
         }
         return $ch;
@@ -84,16 +83,15 @@ class BasicOauthConnection
         $data = $this->getFormCredentialData($formData);
         $url = $this->getUrlData($formData);
         $ch = $this->getStoreConnection($data, $url);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
+        $json_token = curl_exec($ch);
         curl_close($ch);
-        if ($status !== 200)
-        {
+        $isJson = is_string($json_token) && is_array(json_decode($json_token, true)) ? true : false;
+        if ($isJson) {
             return false;
         }
         return true;
     }
-    
+
     /**
      * Return Store Category Connection
      * @param type $url
@@ -110,23 +108,24 @@ class BasicOauthConnection
         curl_setopt($chCategories, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($chCategories, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($chCategories, CURLOPT_TIMEOUT, 29);
-
-        if (curl_errno($chCategories))
-        {
+        if (curl_errno($chCategories)) {
             return false;
         }
         return $chCategories;
     }
 
+    /**
+     * Function To get Credential to connect Basic OAUTH
+     *
+     * @param [array] $formData
+     * @return array
+     */
     public function getFormCredentialData($formData = null)
     {
         $data = null;
-        if (!empty($formData))
-        {
-            if ($formData['credential'] && $formData['credential'] == 'basic_oauth')
-            {
-                if (isset($formData['basic_oauth']) && !empty($formData['basic_oauth']))
-                {
+        if (!empty($formData)) {
+            if ($formData['credential'] && $formData['credential'] == 'basic_oauth') {
+                if (isset($formData['basic_oauth']) && !empty($formData['basic_oauth'])) {
                     $data['username'] = isset($formData['basic_oauth']['oauth_username']) ? $formData['basic_oauth']['oauth_username'] : '';
                     $data['password'] = isset($formData['basic_oauth']['oauth_password']) ? $formData['basic_oauth']['oauth_password'] : '';
                 }
@@ -135,11 +134,33 @@ class BasicOauthConnection
         return $data;
     }
 
+    /**
+     * Check if exist credential to connect function
+     *
+     * @param [type] $data
+     * @return boolean
+     */
+    public function hasCredentialsData($data)
+    {
+        if(
+          isset($data['username']) && !empty($data['username']) && 
+          isset($data['password']) && !empty($data['password'])
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Ger Url From FormData function
+     *
+     * @param [type] $formData
+     * @return string
+     */
     public function getUrlData($formData)
     {
-        if ($formData['url'])
-        {
-            $url = $formData['url'];
+        if ($formData['url']) {
+            $url = $formData['url'] . self::URL_STORE_TOKEN;
         }
         return $url;
     }

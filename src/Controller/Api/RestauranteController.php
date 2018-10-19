@@ -24,6 +24,9 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+/**
+ * Restaurant Controller Class
+ */
 class RestauranteController extends FOSRestController
 {
 
@@ -50,7 +53,7 @@ class RestauranteController extends FOSRestController
      *
      * This call takes into account all confirmed awards, but not pending or refused awards.
      *
-     * @Route("/api/restaurantes", methods={"GET"})
+     * @Route("/api/restaurantes",methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="Returns list of restaurant",
@@ -66,11 +69,10 @@ class RestauranteController extends FOSRestController
     {
         $repository = $this->getDoctrine()->getRepository(Restaurante::class);
         $restaurantes = $repository->findAll();
-
         $view = $this->view($restaurantes);
         return $this->handleView($view);
     }
-
+    
 
     /**
      * Get restaurant.
@@ -259,7 +261,7 @@ class RestauranteController extends FOSRestController
                     $entityManager->flush();
                     $view = $this->view($restaurante);
                 } catch (\Exception $ex) {
-                    $this->_logger->log(100, print_r($ex->getMessage()));
+                    $this->_logger->log(100, print_r($ex->getMessage(),true));
                     $response['message'] = $ex->getMessage();
                     $view = $this->view($response, 500);
                 }
@@ -281,7 +283,7 @@ class RestauranteController extends FOSRestController
      *
      * This call takes into account all confirmed awards, but not pending or refused awards.
      *
-     * @Route("/api/delete-restaurante/{id}", methods={"DELETE"})
+     * @Route("/api/delete-restaurante/{id}", methods={"GET"})
      * @SWG\Response(
      *     response=200,
      *     description="Delete restaurante by id",
@@ -297,18 +299,29 @@ class RestauranteController extends FOSRestController
      *     description="The field of restaurant"
      * )
      * GET Route annotation
-     *  @Delete("/delete-restaurante/{id}")
+     *  @Get("/delete-restaurante/{id}")
      */
-    public function deleteRestauranteAction(Request $request, $id)
+    public function getDeleteRestauranteAction(Request $request, $id)
     {
+        $this->_logger->log(100, print_r('LLegando', true));
+        $this->_logger->log(100, print_r($id, true));
         if (isset($id) && !is_null($id))
         {
-            $entityManager = $this->getDoctrine()->getManager();
-            $repository = $entityManager->getRepository(Restaurante::class);
+            $em = $this->getDoctrine()->getManager();
+            $repository = $em->getRepository(Restaurante::class);
             $restaurante = $repository->find($id);
             if ($restaurante)
             {
-                $view = $this->view($restaurante);
+                try {
+                    $em->remove($restaurante);
+                    $em->flush();
+                    $em->clear();
+                    $response['message'] = 'Eliminación con éxito';
+                    $view = $this->view($response);
+                } catch (\Exception $ex) {
+                    $response['message'] = $ex->getMessage();
+                    $view = $this->view($response, 500);
+                }
                 return $this->handleView($view);
             }
         }
